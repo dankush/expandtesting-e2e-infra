@@ -223,3 +223,46 @@ class APIClient:
             content_type=content_type,
             **kwargs
         )
+
+    def put(
+        self,
+        endpoint: str,
+        data: Dict[str, Any],
+        **kwargs: Any
+    ) -> Response:
+        """Send PUT request.
+        
+        Args:
+            endpoint: API endpoint
+            data: Request payload
+            **kwargs: Additional request parameters
+        
+        Returns:
+            Response object
+        """
+        return self.request(
+            method="PUT",
+            endpoint=endpoint,
+            data=data,
+            **kwargs
+        )
+
+    def delete(
+        self,
+        endpoint: str,
+        **kwargs: Any
+    ) -> Response:
+        """Send DELETE request.
+        
+        Args:
+            endpoint: API endpoint
+            **kwargs: Additional request parameters
+        
+        Returns:
+            Response object
+        """
+        return self.request(
+            method="DELETE",
+            endpoint=endpoint,
+            **kwargs
+        )
