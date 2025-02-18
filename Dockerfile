@@ -11,4 +11,5 @@ ENV PYTHONPATH=/app
 ENV ENVIRONMENT=docker
 ENV LOG_LEVEL=INFO
 
-CMD ["pytest", "-v", "-m", "integration", "--log-cli-level=INFO", "tests/integration/test_health_check.py"]
+#example for exection
+# CMD ["pytest", "-v", "-m", "integration", "--log-cli-level=INFO", "tests/integration/test_health_check.py"]
