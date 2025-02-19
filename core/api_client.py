@@ -169,16 +169,20 @@ class APIClient:
             self._auth_token = data["data"]["token"]
         return data
 
-    def health_check(self) -> Response:
+    def health_check(self, headers: Optional[Dict[str, str]] = None) -> Response:
         """Check API health status.
         
+        Args:
+            headers (Optional[Dict[str, str]]): Optional headers to include in the request.
+        
         Returns:
-            Response object containing health status
+            Response: Response object containing health status
             
         Raises:
             APIError: If health check fails
-        """
-        return self.request(method="GET", endpoint="/health-check")
+        """# For debugging purposes
+        # Pass the headers to the request method
+        return self.request(method="GET", endpoint="/health-check", headers=headers)
 
     def get(
         self,
