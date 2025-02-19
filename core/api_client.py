@@ -96,9 +96,10 @@ class APIClient:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, str]] = None,
         timeout: Optional[float] = None,
-        content_type: str = "json"
+        content_type: str = "json",
+        retries: int = 2
     ) -> Response:
-        """Make a generic request to the API.
+        """Make a generic request to the API with retry mechanism.
         
         Args:
             method: HTTP method (GET, POST, etc.)
@@ -108,12 +109,13 @@ class APIClient:
             headers: Additional headers
             timeout: Request timeout override
             content_type: Content type for request (json/form)
+            retries: Number of times to retry the request on failure
             
         Returns:
             Response object
             
         Raises:
-            APIError: If request fails
+            APIError: If request fails after retries
         """
         url = self._build_url(endpoint)
         request_headers = {**self.default_headers, **(headers or {})}
@@ -126,23 +128,26 @@ class APIClient:
         else:
             processed_data = None
 
-        try:
-            response = self.session.request(
-                method=method,
-                url=url,
-                headers=request_headers,
-                params=params,
-                data=processed_data,
-                timeout=timeout or self.timeout,
-                verify=self.verify_ssl
-            )
-            return self._handle_response(response)
-        except requests.RequestException as e:
-            raise APIError(
-                message=f"Request failed: {str(e)}",
-                status_code=getattr(e.response, 'status_code', None),
-                response=getattr(e.response, 'text', None)
-            ) from e
+        for attempt in range(retries):
+            try:
+                response = self.session.request(
+                    method=method,
+                    url=url,
+                    headers=request_headers,
+                    params=params,
+                    data=processed_data,
+                    timeout=timeout or self.timeout,
+                    verify=self.verify_ssl
+                )
+                return self._handle_response(response)
+            except requests.RequestException as e:
+                if attempt < retries - 1:  # If not the last attempt, log and retry
+                    continue
+                raise APIError(
+                    message=f"Request failed after {retries} attempts: {str(e)}",
+                    status_code=getattr(e.response, 'status_code', None),
+                    response=getattr(e.response, 'text', None)
+                ) from e
 
     def login(self, email: str, password: str) -> Dict[str, Any]:
         """Authenticate user and store token.
@@ -169,20 +174,21 @@ class APIClient:
             self._auth_token = data["data"]["token"]
         return data
 
-    def health_check(self, headers: Optional[Dict[str, str]] = None) -> Response:
+    def health_check(self, headers: Optional[Dict[str, str]] = None, timeout: Optional[float] = None) -> Response:
         """Check API health status.
         
         Args:
             headers (Optional[Dict[str, str]]): Optional headers to include in the request.
+            timeout (Optional[float]): Optional timeout for the request in seconds.
         
         Returns:
             Response: Response object containing health status
             
         Raises:
             APIError: If health check fails
-        """# For debugging purposes
-        # Pass the headers to the request method
-        return self.request(method="GET", endpoint="/health-check", headers=headers)
+        """
+        # Pass the headers and timeout to the request method
+        return self.request(method="GET", endpoint="/health-check", headers=headers, timeout=timeout)
 
     def get(
         self,
