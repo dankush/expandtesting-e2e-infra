@@ -37,6 +37,10 @@ class APIClient:
         """Get the current authentication token."""
         return self._auth_token
 
+    @auth_token.setter
+    def auth_token(self, token: Optional[str]) -> None:
+        self._auth_token = token
+
     @property
     def default_headers(self) -> Dict[str, str]:
         """Get default headers for API requests."""
@@ -72,6 +76,9 @@ class APIClient:
         Raises:
             APIError: If response indicates an error
         """
+        # Add this check to stop exception for 401 responses
+        if response.status_code == 401:
+            return response
         try:
             response.raise_for_status()
             return response
