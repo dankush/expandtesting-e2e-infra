@@ -1,0 +1,76 @@
+### README: Running Locust Performance Tests
+
+#### Prerequisites
+Ensure you have **Python 3.10+** and Locust installed in your environment:
+```sh
+pip install locust
+```
+
+---
+
+#### Running Locust Tests
+Navigate to the project directory and execute the Locust test script:
+```sh
+locust -f ./scripts/locustfile.py --host=https://practice.expandtesting.com/notes/api --headless -u 10 -r 2 -t 30s
+```
+
+**Options Explained:**
+- `-f ./scripts/locustfile.py` → Path to the Locust test script
+- `--host=https://practice.expandtesting.com/notes/api` → API base URL
+- `--headless` → Runs without UI (terminal mode)
+- `-u 10` → Simulate **10 concurrent users**
+- `-r 2` → Spawn **2 users per second**
+- `-t 30s` → Run test for **30 seconds**
+
+---
+
+#### Saving Locust Output to a File
+To log test results in a file:
+```sh
+locust -f ./scripts/locustfile.py --host=https://practice.expandtesting.com/notes/api --headless -u 10 -r 2 -t 30s | tee ./logs/locust_output.txt
+```
+- This will store results in `./logs/locust_output.txt` while still displaying them in the terminal.
+
+---
+
+#### Viewing Results in the Web UI (Optional)
+To use Locust's interactive UI:
+```sh
+locust -f ./scripts/locustfile.py --host=https://practice.expandtesting.com/notes/api
+```
+Then, open [http://localhost:8089](http://localhost:8089) in your browser.
+
+---
+
+#### Interpreting the Output
+After execution, Locust prints key performance metrics, including:
+- **Total Requests**
+- **Failures (%)**
+- **Average Response Time**
+- **Requests Per Second (RPS)**
+- **Response Time Percentiles**
+
+For a **pass/fail status**, the test will exit with:
+- `0` → Test Passed
+- `1` → Test Failed (if performance thresholds were not met)
+
+---
+
+#### Running Multiple Test Scripts
+If you have multiple scripts, specify the desired script in the command:
+```sh
+locust -f ./scripts/another_test.py --host=https://practice.expandtesting.com/notes/api --headless -u 5 -r 1 -t 60s
+```
+
+---
+
+### Troubleshooting
+- If Locust is not found, ensure the virtual environment is activated:
+  ```sh
+  source .venv/bin/activate
+  ```
+- If no requests are made, check the `locustfile.py` script for correct task definitions.
+
+---
+
+This setup ensures **easy execution and logging of Locust performance tests**.
