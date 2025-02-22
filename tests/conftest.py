@@ -6,11 +6,10 @@ from typing import Dict, Any
 from utils.data_generator import generate_random_email
 
 @pytest.fixture(scope="session")
-def authenticated_api_client(base_url: str) -> APIClient:
+def authenticated_api_client() -> APIClient:
     """
     Fixture to provide an authenticated API client instance for the session.
     
-    :param base_url: The base URL for the API.
     :return: An authenticated instance of APIClient.
     """
     client = APIClient(base_url)
@@ -27,6 +26,16 @@ def authenticated_api_client(base_url: str) -> APIClient:
     client.login("test@example.com", "password")
 
     return client
+
+@pytest.fixture(scope="session")
+def base_url(pytestconfig) -> str:
+    """
+    Fixture to get the base URL from pytest configuration.
+    
+    :param pytestconfig: The pytest configuration object.
+    :return: The base URL for the API.
+    """
+    return pytestconfig.getoption("--base-url")
 
 def pytest_addoption(parser: pytest.Parser) -> None:
     """
