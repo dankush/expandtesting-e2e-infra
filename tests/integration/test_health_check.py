@@ -175,9 +175,9 @@ def test_health_check_methods(api_client: APIClient, method: str) -> None:
                 HTTPStatus.NOT_IMPLEMENTED,
                 HTTPStatus.NOT_FOUND
             )
-    except APIError as e:
+    except Exception as e:
         if method != "GET":
-            assert e.status_code in (
+            assert response.status_code in (
                 HTTPStatus.METHOD_NOT_ALLOWED,
                 HTTPStatus.NOT_IMPLEMENTED,
                 HTTPStatus.NOT_FOUND
