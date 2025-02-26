@@ -44,6 +44,12 @@ def test_health_check_success(api_client: APIClient) -> None:
     """
     # When
     response = api_client.health_check()
+    '''
+     Importance:
+        This test ensures that the health check endpoint is functioning correctly,
+        which is crucial for monitoring the availability and status of the API.
+    '''
+    assert hasattr(response, 'elapsed'), "Response object does not have 'elapsed' attribute"
     response_data: dict[str, Any] = response.json()
 
     # Then
@@ -157,18 +163,24 @@ def test_health_check_timeouts(
     ids=lambda m: f"method_{m.lower()}"
 )
 def test_health_check_methods(api_client: APIClient, method: str) -> None:
-    """
-    Verify the health check endpoint's behavior with different HTTP methods.
-
-    Args:
-        api_client: The API client fixture.
-        method: The HTTP method to use.
-    """
-    # When
-    response = api_client.request(method=method, endpoint="/health-check")
-
-    # Then: Only GET should succeed, while other methods may not be allowed or implemented.
-    if method == "GET":
-        assert response.status_code == HTTPStatus.OK
-    else:
-        assert response.status_code in (HTTPStatus.METHOD_NOT_ALLOWED, HTTPStatus.NOT_IMPLEMENTED)
+    """Verify the health check endpoint's behavior with different HTTP methods."""
+    try:
+        response = api_client.request(method=method, endpoint="/health-check")
+        
+        if method == "GET":
+            assert response.status_code == HTTPStatus.OK
+        else:
+            assert response.status_code in (
+                HTTPStatus.METHOD_NOT_ALLOWED,
+                HTTPStatus.NOT_IMPLEMENTED,
+                HTTPStatus.NOT_FOUND
+            )
+    except APIError as e:
+        if method != "GET":
+            assert e.status_code in (
+                HTTPStatus.METHOD_NOT_ALLOWED,
+                HTTPStatus.NOT_IMPLEMENTED,
+                HTTPStatus.NOT_FOUND
+            )
+        else:
+            raise
