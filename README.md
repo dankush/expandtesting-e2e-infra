@@ -5,7 +5,7 @@ A scalable test automation framework built with Python and pytest.
 ## Project Structure
 
 
-This repository serves as a demonstration of a scalable, maintainable, and extensible end-to-end (E2E) automation infrastructure for testing the [ExpandTesting Practice Site](https://practice.expandtesting.com/). The goal is to establish a robust framework that can handle automation for different testing scenarios effectively.
+This repository serves as a demonstration of a scalable, maintainable, and extensible end-to-end (E2E) and integration automation infrastructure for testing the [ExpandTesting Practice Site](https://practice.expandtesting.com/). The goal is to establish a robust framework that can handle automation for different testing scenarios effectively.
 
 ![Project Structure](assets/images/infra_stracture.png)
 
